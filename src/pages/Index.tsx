@@ -9,19 +9,29 @@ const DEMO_PINS = [
     id: 1,
     title: "Beautiful Workspace",
     imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-    description: "A clean and minimal workspace setup"
+    description: "A clean and minimal workspace setup",
+    isAd: false,
+    width: 1200,
+    height: 800
   },
   {
     id: 2,
-    title: "Tech Innovation",
-    imageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475",
-    description: "The future of technology"
+    title: "Premium Coffee Experience",
+    imageUrl: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
+    description: "Start your day with premium coffee",
+    isAd: true,
+    advertiser: "Coffee Co.",
+    width: 800,
+    height: 1200
   },
   {
     id: 3,
     title: "Modern Development",
     imageUrl: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
-    description: "Modern software development workspace"
+    description: "Modern software development workspace",
+    isAd: false,
+    width: 1600,
+    height: 900
   },
 ];
 
@@ -38,6 +48,11 @@ const Index = () => {
               key={pin.id}
               imageUrl={pin.imageUrl}
               title={pin.title}
+              description={pin.description}
+              isAd={pin.isAd}
+              advertiser={pin.advertiser}
+              width={pin.width}
+              height={pin.height}
               onClick={() => setSelectedPin(pin)}
             />
           ))}
