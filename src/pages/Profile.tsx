@@ -37,14 +37,25 @@ const Profile = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col items-center mb-12">
-            <Avatar className="w-32 h-32 mb-4">
-              <AvatarImage src={DEMO_USER.avatar} alt={DEMO_USER.name} />
-              <AvatarFallback>{DEMO_USER.name[0]}</AvatarFallback>
-            </Avatar>
+            <div className="w-32 h-32 rounded-full overflow-hidden mb-4">
+              <img 
+                src={DEMO_USER.avatar} 
+                alt={DEMO_USER.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
             <h1 className="text-3xl font-bold mb-2">{DEMO_USER.name}</h1>
             <p className="text-muted-foreground mb-4">@{DEMO_USER.username}</p>
             <p className="text-center max-w-md mb-6">{DEMO_USER.bio}</p>
-            <Button variant="outline">Edit Profile</Button>
+            <div className="flex gap-4">
+              <Button variant="outline">Edit Profile</Button>
+              <Button 
+                className="bg-gradient-to-r from-purple-600 to-orange-500 hover:from-purple-700 hover:to-orange-600"
+                onClick={() => window.location.href = '/upgrade'}
+              >
+                Upgrade to Pro
+              </Button>
+            </div>
           </div>
           
           <div className="masonry-grid">
