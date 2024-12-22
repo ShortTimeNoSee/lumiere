@@ -25,8 +25,8 @@ export function PinCard({
   isAd,
   advertiser,
   creator,
-  width = 1,
-  height = 1,
+  width,
+  height,
   isPremium,
   onClick
 }: PinCardProps) {
@@ -34,10 +34,6 @@ export function PinCard({
     <Card 
       className="pin-card overflow-hidden cursor-pointer group relative"
       onClick={onClick}
-      style={{
-        '--image-width': width,
-        '--image-height': height
-      } as React.CSSProperties}
     >
       <div className="pin-image-container">
         <img 
@@ -45,6 +41,8 @@ export function PinCard({
           alt={title}
           className="pin-image transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
+          width={width}
+          height={height}
         />
         
         {isAd && <div className="ad-badge">Ad</div>}

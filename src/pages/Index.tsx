@@ -3,7 +3,7 @@ import { Header } from "@/components/Header";
 import { PinCard } from "@/components/PinCard";
 import { PinModal } from "@/components/PinModal";
 
-// Extended demo data with varied aspect ratios
+// Extended demo data with actual dimensions
 const DEMO_PINS = [
   {
     id: 1,
@@ -98,7 +98,6 @@ const DEMO_PINS = [
     width: 1200,
     height: 800
   },
-  // Additional pins with varied aspect ratios
   {
     id: 11,
     title: "Mountain Vista",
@@ -140,6 +139,46 @@ const DEMO_PINS = [
     description: "Achieve your fitness dreams",
     width: 800,
     height: 1200
+  },
+  {
+    id: 16,
+    title: "Urban Exploration",
+    imageUrl: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000",
+    description: "Discover hidden city gems",
+    width: 1920,
+    height: 1080
+  },
+  {
+    id: 17,
+    title: "Minimal Tech Setup",
+    imageUrl: "https://images.unsplash.com/photo-1460353581641-37baddab0fa2",
+    description: "Clean and efficient workspace",
+    width: 1200,
+    height: 800
+  },
+  {
+    id: 18,
+    title: "Nature Photography",
+    imageUrl: "https://images.unsplash.com/photo-1426604966848-d7adac402bff",
+    description: "Stunning natural landscapes",
+    width: 2400,
+    height: 1600
+  },
+  {
+    id: 19,
+    title: "Street Art Culture",
+    imageUrl: "https://images.unsplash.com/photo-1460723237483-7a6dc9d0b212",
+    description: "Urban art expressions",
+    width: 1600,
+    height: 2400
+  },
+  {
+    id: 20,
+    title: "Modern Architecture",
+    imageUrl: "https://images.unsplash.com/photo-1488972685288-c3fd157d7c7a",
+    description: "Contemporary building designs",
+    width: 1920,
+    height: 1280
   }
 ];
 
@@ -149,7 +188,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4">
+      <main className="container mx-auto">
         <div className="masonry-grid">
           {DEMO_PINS.map((pin) => (
             <PinCard
