@@ -25,8 +25,8 @@ export function PinCard({
   isAd,
   advertiser,
   creator,
-  width,
-  height,
+  width = 1,
+  height = 1,
   isPremium,
   onClick
 }: PinCardProps) {
@@ -34,13 +34,17 @@ export function PinCard({
     <Card 
       className="pin-card overflow-hidden cursor-pointer group relative"
       onClick={onClick}
+      style={{
+        '--image-width': width,
+        '--image-height': height
+      } as React.CSSProperties}
     >
-      <div className="relative">
+      <div className="pin-image-container">
         <img 
           src={imageUrl} 
           alt={title}
           className="pin-image transition-transform duration-300 group-hover:scale-105"
-          style={{ aspectRatio: width && height ? `${width}/${height}` : 'auto' }}
+          loading="lazy"
         />
         
         {isAd && <div className="ad-badge">Ad</div>}
@@ -61,7 +65,7 @@ export function PinCard({
                     <img 
                       src={creator.avatar} 
                       alt={creator.name}
-                      className="w-6 h-6 rounded-full"
+                      className="w-6 h-6 rounded-full object-cover"
                     />
                   ) : (
                     <User className="w-6 h-6 text-white/80" />
