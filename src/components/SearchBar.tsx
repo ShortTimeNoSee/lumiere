@@ -32,7 +32,7 @@ export function SearchBar() {
   const navigate = useNavigate();
 
   const handleSearch = useCallback(
-    debounce((searchQuery: string) => {
+    (searchQuery: string) => {
       if (!searchQuery.trim()) return;
       
       const searchParams = new URLSearchParams({
@@ -45,13 +45,15 @@ export function SearchBar() {
       });
       
       navigate(`/search?${searchParams.toString()}`);
-    }, 300),
-    [category, advancedParams]
+    },
+    [category, advancedParams, navigate]
   );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleSearch(query);
+    if (query.trim()) {
+      handleSearch(query);
+    }
   };
 
   return (
@@ -63,10 +65,7 @@ export function SearchBar() {
             type="search"
             placeholder={`Search ${category.toLowerCase()}...`}
             value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              handleSearch(e.target.value);
-            }}
+            onChange={(e) => setQuery(e.target.value)}
             className="pl-10"
           />
         </div>
@@ -99,7 +98,7 @@ export function SearchBar() {
       </div>
 
       {showAdvanced && (
-        <div className="mt-2 p-4 bg-background border rounded-md shadow-sm space-y-3">
+        <div className="mt-2 p-4 bg-background border rounded-md shadow-sm space-y-3 animate-in fade-in-0 slide-in-from-top-2">
           <Input
             placeholder="Exact match phrase"
             value={advancedParams.exactMatch || ''}

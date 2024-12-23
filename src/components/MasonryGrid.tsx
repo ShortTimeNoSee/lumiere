@@ -19,10 +19,11 @@ export function MasonryGrid({ pins, onPinClick }: MasonryGridProps) {
   useEffect(() => {
     const updateColumns = () => {
       const width = window.innerWidth;
-      if (width >= 2400) setColumns(6);
-      else if (width >= 1920) setColumns(5);
-      else if (width >= 1440) setColumns(4);
-      else if (width >= 1024) setColumns(3);
+      if (width >= 2400) setColumns(8);
+      else if (width >= 1920) setColumns(6);
+      else if (width >= 1440) setColumns(5);
+      else if (width >= 1024) setColumns(4);
+      else if (width >= 768) setColumns(3);
       else setColumns(2);
     };
 
@@ -39,18 +40,30 @@ export function MasonryGrid({ pins, onPinClick }: MasonryGridProps) {
   });
 
   return (
-    <div ref={containerRef} className="h-[calc(100vh-4rem)] overflow-auto">
+    <div 
+      ref={containerRef} 
+      className="h-[calc(100vh-4rem)] overflow-auto"
+    >
       <div 
         ref={ref}
         className="masonry-grid"
         style={{
           columnCount: columns,
           opacity: inView ? 1 : 0,
-          transition: 'opacity 0.3s ease-in-out'
+          transition: 'opacity 0.3s ease-in-out',
+          columnGap: '1rem',
+          padding: '1rem',
         }}
       >
         {pins.map((pin) => (
-          <div key={pin.id} className="break-inside-avoid mb-4">
+          <div 
+            key={pin.id} 
+            className="break-inside-avoid mb-4 transform-gpu"
+            style={{
+              width: '100%',
+              willChange: 'transform',
+            }}
+          >
             <PinCard
               {...pin}
               onClick={() => onPinClick(pin)}
