@@ -44,9 +44,22 @@ const DEMO_PINS = [
   }
 ];
 
+const fuzzyMatch = (text: string, query: string): boolean => {
+  text = text.toLowerCase();
+  query = query.toLowerCase();
+  
+  if (text.includes(query)) return true;
+  
+  const words = query.split(' ').filter(word => word.length > 0);
+  return words.some(word => {
+    return text.split(' ').some(textWord => 
+      textWord.includes(word) || word.includes(textWord)
+    );
+  });
+};
+
 const performSearch = async (query: string, params: URLSearchParams) => {
-  // This would be replaced with an actual API call
-  await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 100));
   
   const category = params.get('category') || 'images';
   const exact = params.get('exact');
@@ -55,41 +68,40 @@ const performSearch = async (query: string, params: URLSearchParams) => {
   const type = params.get('type');
 
   return DEMO_PINS.filter(pin => {
-    let matches = true;
+    if (!query && !exact && !exclude && !author && !type) return true;
     
-    // Basic search
-    if (query) {
-      const searchTerms = query.toLowerCase().split(' ');
-      matches = searchTerms.every(term => 
-        pin.title.toLowerCase().includes(term) ||
-        pin.description?.toLowerCase().includes(term)
-      );
-    }
-
-    // Exact match
-    if (exact && !pin.title.toLowerCase().includes(exact.toLowerCase())) {
+    let matches = true;
+    const searchText = `${pin.title} ${pin.description || ''}`.toLowerCase();
+    
+    if (query && !fuzzyMatch(searchText, query)) {
       matches = false;
     }
 
-    // Exclude terms
+    if (exact && !searchText.includes(exact.toLowerCase())) {
+      matches = false;
+    }
+
     if (exclude) {
       const excludeTerms = exclude.toLowerCase().split(',');
-      if (excludeTerms.some(term => 
-        pin.title.toLowerCase().includes(term) ||
-        pin.description?.toLowerCase().includes(term)
+      if (excludeTerms.some(term => searchText.includes(term.trim()))) {
+        matches = false;
+      }
+    }
+
+    if (author) {
+      const authors = author.toLowerCase().split(',');
+      if (!pin.creator || !authors.some(a => 
+        pin.creator.name.toLowerCase().includes(a.trim())
       )) {
         matches = false;
       }
     }
 
-    // Author filter
-    if (author && pin.creator?.name.toLowerCase() !== author.toLowerCase()) {
-      matches = false;
-    }
-
-    // File type filter (in a real app, we'd extract this from the image URL)
-    if (type && !pin.imageUrl.toLowerCase().endsWith(type.toLowerCase())) {
-      matches = false;
+    if (type) {
+      const types = type.toLowerCase().split(',');
+      if (!types.some(t => pin.imageUrl.toLowerCase().endsWith(t.trim()))) {
+        matches = false;
+      }
     }
 
     return matches;

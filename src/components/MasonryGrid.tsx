@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { PinCard } from './PinCard';
-import { useVirtualizer } from '@tanstack/react-virtual';
 import { useInView } from 'react-intersection-observer';
 
 interface MasonryGridProps {
@@ -24,20 +23,16 @@ export function MasonryGrid({ pins, onPinClick }: MasonryGridProps) {
       else if (width >= 1440) setColumns(5);
       else if (width >= 1024) setColumns(4);
       else if (width >= 768) setColumns(3);
-      else setColumns(2);
+      else setColumns(2); // Minimum 2 columns for mobile
     };
 
     updateColumns();
-    window.addEventListener('resize', updateColumns);
-    return () => window.removeEventListener('resize', updateColumns);
+    const resizeObserver = new ResizeObserver(updateColumns);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+    return () => resizeObserver.disconnect();
   }, []);
-
-  const rowVirtualizer = useVirtualizer({
-    count: Math.ceil(pins.length / columns),
-    getScrollElement: () => containerRef.current,
-    estimateSize: () => 300,
-    overscan: 5,
-  });
 
   return (
     <div 
@@ -46,23 +41,17 @@ export function MasonryGrid({ pins, onPinClick }: MasonryGridProps) {
     >
       <div 
         ref={ref}
-        className="masonry-grid"
+        className="grid gap-3 p-3 auto-rows-auto"
         style={{
-          columnCount: columns,
+          gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
           opacity: inView ? 1 : 0,
           transition: 'opacity 0.3s ease-in-out',
-          columnGap: '1rem',
-          padding: '1rem',
         }}
       >
         {pins.map((pin) => (
           <div 
             key={pin.id} 
-            className="break-inside-avoid mb-4 transform-gpu"
-            style={{
-              width: '100%',
-              willChange: 'transform',
-            }}
+            className="break-inside-avoid transform-gpu"
           >
             <PinCard
               {...pin}

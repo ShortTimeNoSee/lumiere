@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { User } from "lucide-react";
+import { useState } from "react";
 
 interface PinCardProps {
   imageUrl: string;
@@ -30,29 +31,45 @@ export function PinCard({
   isPremium,
   onClick
 }: PinCardProps) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const aspectRatio = height && width ? height / width : 1;
+
   return (
     <Card 
-      className="pin-card overflow-hidden cursor-pointer group relative"
+      className="overflow-hidden cursor-pointer group relative w-full transform-gpu transition-transform hover:scale-[1.02] hover:-translate-y-1"
       onClick={onClick}
+      style={{ 
+        willChange: 'transform',
+        contain: 'paint layout'
+      }}
     >
-      <div className="pin-image-container">
+      <div 
+        className="relative"
+        style={{ paddingBottom: `${aspectRatio * 100}%` }}
+      >
         <img 
           src={imageUrl} 
           alt={title}
-          className="pin-image transition-transform duration-300 group-hover:scale-105"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
           loading="lazy"
-          width={width}
-          height={height}
+          decoding="async"
+          onLoad={() => setImageLoaded(true)}
+          style={{ 
+            willChange: 'transform',
+            backfaceVisibility: 'hidden'
+          }}
         />
         
         {isAd && <div className="ad-badge">Ad</div>}
         
-        <div className="pin-overlay" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
         
-        <div className="pin-content">
-          <h3 className="text-lg font-semibold mb-1 line-clamp-2">{title}</h3>
+        <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+          <h3 className="text-sm font-semibold text-white mb-1 line-clamp-2">{title}</h3>
           {description && (
-            <p className="text-sm text-white/90 line-clamp-2 mb-2">{description}</p>
+            <p className="text-xs text-white/90 line-clamp-2 mb-2">{description}</p>
           )}
           
           <div className="flex items-center justify-between">
@@ -68,7 +85,7 @@ export function PinCard({
                   ) : (
                     <User className="w-6 h-6 text-white/80" />
                   )}
-                  <span className="text-sm font-medium">{creator.name}</span>
+                  <span className="text-xs font-medium text-white">{creator.name}</span>
                 </>
               )}
             </div>
@@ -76,7 +93,7 @@ export function PinCard({
             {isPremium && (
               <Badge 
                 variant="secondary"
-                className="bg-gradient-to-r from-purple-600 to-orange-500"
+                className="bg-gradient-to-r from-purple-600 to-orange-500 text-xs"
               >
                 Premium
               </Badge>
