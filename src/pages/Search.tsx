@@ -5,6 +5,7 @@ import { MasonryGrid } from '@/components/MasonryGrid';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useQuery } from '@tanstack/react-query';
 import { PinModal } from '@/components/PinModal';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Demo data for search results
 const DEMO_PINS = [
@@ -43,14 +44,56 @@ const DEMO_PINS = [
   }
 ];
 
-// This will be replaced with actual API calls
-const mockSearch = async (query: string, category: string) => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  return DEMO_PINS.filter(pin => 
-    pin.title.toLowerCase().includes(query.toLowerCase()) ||
-    pin.description.toLowerCase().includes(query.toLowerCase())
-  );
+const performSearch = async (query: string, params: URLSearchParams) => {
+  // This would be replaced with an actual API call
+  await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+  
+  const category = params.get('category') || 'images';
+  const exact = params.get('exact');
+  const exclude = params.get('exclude');
+  const author = params.get('author');
+  const type = params.get('type');
+
+  return DEMO_PINS.filter(pin => {
+    let matches = true;
+    
+    // Basic search
+    if (query) {
+      const searchTerms = query.toLowerCase().split(' ');
+      matches = searchTerms.every(term => 
+        pin.title.toLowerCase().includes(term) ||
+        pin.description?.toLowerCase().includes(term)
+      );
+    }
+
+    // Exact match
+    if (exact && !pin.title.toLowerCase().includes(exact.toLowerCase())) {
+      matches = false;
+    }
+
+    // Exclude terms
+    if (exclude) {
+      const excludeTerms = exclude.toLowerCase().split(',');
+      if (excludeTerms.some(term => 
+        pin.title.toLowerCase().includes(term) ||
+        pin.description?.toLowerCase().includes(term)
+      )) {
+        matches = false;
+      }
+    }
+
+    // Author filter
+    if (author && pin.creator?.name.toLowerCase() !== author.toLowerCase()) {
+      matches = false;
+    }
+
+    // File type filter (in a real app, we'd extract this from the image URL)
+    if (type && !pin.imageUrl.toLowerCase().endsWith(type.toLowerCase())) {
+      matches = false;
+    }
+
+    return matches;
+  });
 };
 
 export default function Search() {
@@ -60,8 +103,8 @@ export default function Search() {
   const [selectedPin, setSelectedPin] = useState(null);
 
   const { data: results = [], isLoading } = useQuery({
-    queryKey: ['search', query, category],
-    queryFn: () => mockSearch(query, category),
+    queryKey: ['search', query, category, searchParams.toString()],
+    queryFn: () => performSearch(query, searchParams),
     enabled: !!query,
   });
 
@@ -74,7 +117,7 @@ export default function Search() {
         </h1>
 
         <Tabs defaultValue={category} className="w-full">
-          <TabsList>
+          <TabsList className="mb-6">
             <TabsTrigger value="images">Images</TabsTrigger>
             <TabsTrigger value="collections">Collections</TabsTrigger>
             <TabsTrigger value="people">People</TabsTrigger>
@@ -83,12 +126,20 @@ export default function Search() {
 
           <TabsContent value="images" className="mt-6">
             {isLoading ? (
-              <div>Loading...</div>
-            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <Skeleton key={i} className="w-full h-[200px] rounded-lg" />
+                ))}
+              </div>
+            ) : results.length > 0 ? (
               <MasonryGrid
                 pins={results}
                 onPinClick={setSelectedPin}
               />
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-lg text-muted-foreground">No results found</p>
+              </div>
             )}
           </TabsContent>
           
