@@ -23,40 +23,49 @@ export function MasonryGrid({ pins, onPinClick }: MasonryGridProps) {
       else if (width >= 1440) setColumns(5);
       else if (width >= 1024) setColumns(4);
       else if (width >= 768) setColumns(3);
-      else setColumns(2); // Minimum 2 columns for mobile
+      else setColumns(2);
     };
 
     updateColumns();
-    const resizeObserver = new ResizeObserver(updateColumns);
-    if (containerRef.current) {
-      resizeObserver.observe(containerRef.current);
-    }
-    return () => resizeObserver.disconnect();
+    window.addEventListener('resize', updateColumns);
+    return () => window.removeEventListener('resize', updateColumns);
   }, []);
+
+  const getColumnPins = () => {
+    const columnArrays = Array.from({ length: columns }, () => []);
+    pins.forEach((pin, index) => {
+      columnArrays[index % columns].push(pin);
+    });
+    return columnArrays;
+  };
 
   return (
     <div 
       ref={containerRef} 
-      className="h-[calc(100vh-4rem)] overflow-auto"
+      className="h-[calc(100vh-4rem)] overflow-auto px-3"
     >
       <div 
         ref={ref}
-        className="grid gap-3 p-3 auto-rows-auto"
+        className="grid gap-3"
         style={{
           gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
           opacity: inView ? 1 : 0,
           transition: 'opacity 0.3s ease-in-out',
         }}
       >
-        {pins.map((pin) => (
-          <div 
-            key={pin.id} 
-            className="break-inside-avoid transform-gpu"
-          >
-            <PinCard
-              {...pin}
-              onClick={() => onPinClick(pin)}
-            />
+        {getColumnPins().map((columnPins, columnIndex) => (
+          <div key={columnIndex} className="flex flex-col gap-3">
+            {columnPins.map((pin) => (
+              <div 
+                key={pin.id}
+                className="w-full transform-gpu"
+              >
+                <PinCard
+                  {...pin}
+                  onClick={() => onPinClick(pin)}
+                />
+              </div>
+            ))}
           </div>
         ))}
       </div>

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { PinCard } from "@/components/PinCard";
+import { MasonryGrid } from "@/components/MasonryGrid";
 import { PinModal } from "@/components/PinModal";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Temporary data for demonstration
 const DEMO_USER = {
@@ -28,8 +28,18 @@ const DEMO_PINS = [
   },
 ];
 
+const DEMO_COLLECTIONS = [
+  {
+    id: 1,
+    title: "Workspace Inspiration",
+    pins: DEMO_PINS,
+    coverImage: DEMO_PINS[0].imageUrl
+  }
+];
+
 const Profile = () => {
   const [selectedPin, setSelectedPin] = useState<typeof DEMO_PINS[0] | null>(null);
+  const [activeTab, setActiveTab] = useState("uploads");
 
   return (
     <div className="min-h-screen bg-background">
@@ -58,16 +68,36 @@ const Profile = () => {
             </div>
           </div>
           
-          <div className="masonry-grid">
-            {DEMO_PINS.map((pin) => (
-              <PinCard
-                key={pin.id}
-                imageUrl={pin.imageUrl}
-                title={pin.title}
-                onClick={() => setSelectedPin(pin)}
+          <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              <TabsTrigger value="uploads">Uploads</TabsTrigger>
+              <TabsTrigger value="collections">Collections</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="uploads">
+              <MasonryGrid
+                pins={DEMO_PINS}
+                onPinClick={setSelectedPin}
               />
-            ))}
-          </div>
+            </TabsContent>
+            
+            <TabsContent value="collections">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {DEMO_COLLECTIONS.map((collection) => (
+                  <div key={collection.id} className="relative rounded-lg overflow-hidden group cursor-pointer">
+                    <img 
+                      src={collection.coverImage} 
+                      alt={collection.title}
+                      className="w-full aspect-square object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <h3 className="text-white text-xl font-bold">{collection.title}</h3>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
       <PinModal

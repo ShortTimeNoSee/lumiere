@@ -57,19 +57,10 @@ const Upgrade = () => {
   const { toast } = useToast();
 
   const handleUpgrade = async (tier: string) => {
-    try {
-      // TODO: Implement Stripe checkout
-      toast({
-        title: "Coming Soon",
-        description: "Stripe integration will be implemented shortly.",
-      });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to initiate upgrade process. Please try again.",
-      });
-    }
+    toast({
+      title: "Coming Soon",
+      description: "Payment processing will be implemented shortly.",
+    });
   };
 
   return (
@@ -125,26 +116,6 @@ const Upgrade = () => {
               ]}
               onSelect={() => handleUpgrade("enterprise")}
             />
-          </div>
-
-          <div className="mt-16 text-center">
-            <h2 className="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
-            <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto text-left">
-              <div>
-                <h3 className="font-semibold mb-2">What's included in the free plan?</h3>
-                <p className="text-muted-foreground">
-                  The free plan includes high-quality image uploads with basic compression, 
-                  unlimited pin creation, and access to our growing community.
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-2">Can I upgrade or downgrade anytime?</h3>
-                <p className="text-muted-foreground">
-                  Yes! You can change your plan at any time. Upgrades take effect immediately, 
-                  while downgrades take effect at the end of your billing cycle.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </main>
