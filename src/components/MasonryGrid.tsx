@@ -46,7 +46,7 @@ export function MasonryGrid({ pins, onPinClick }: MasonryGridProps) {
     >
       <div 
         ref={ref}
-        className="grid gap-3"
+        className="grid gap-4"
         style={{
           gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
           opacity: inView ? 1 : 0,
@@ -54,7 +54,7 @@ export function MasonryGrid({ pins, onPinClick }: MasonryGridProps) {
         }}
       >
         {getColumnPins().map((columnPins, columnIndex) => (
-          <div key={columnIndex} className="flex flex-col gap-3">
+          <div key={columnIndex} className="flex flex-col gap-4">
             {columnPins.map((pin) => (
               <div 
                 key={pin.id}

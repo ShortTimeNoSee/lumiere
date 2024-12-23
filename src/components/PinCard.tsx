@@ -36,7 +36,7 @@ export function PinCard({
 
   return (
     <Card 
-      className="overflow-hidden cursor-pointer group relative w-full transform-gpu transition-transform hover:scale-[1.02] hover:-translate-y-1"
+      className="overflow-hidden cursor-pointer group relative w-full transform-gpu transition-transform duration-200 hover:z-10 hover:scale-[1.02] hover:-translate-y-1"
       onClick={onClick}
       style={{ 
         willChange: 'transform',
@@ -62,12 +62,16 @@ export function PinCard({
           }}
         />
         
-        {isAd && <div className="ad-badge">Ad</div>}
+        {isAd && (
+          <Badge variant="secondary" className="absolute top-2 right-2 bg-black/60">
+            Ad
+          </Badge>
+        )}
         
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
         
         <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-2 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
-          <h3 className="text-sm font-semibold text-white mb-1 line-clamp-2">{title}</h3>
+          <h3 className="text-xs sm:text-sm font-semibold text-white mb-1 line-clamp-2">{title}</h3>
           {description && (
             <p className="text-xs text-white/90 line-clamp-2 mb-2">{description}</p>
           )}
@@ -80,10 +84,10 @@ export function PinCard({
                     <img 
                       src={creator.avatar} 
                       alt={creator.name}
-                      className="w-6 h-6 rounded-full object-cover"
+                      className="w-4 h-4 sm:w-6 sm:h-6 rounded-full object-cover"
                     />
                   ) : (
-                    <User className="w-6 h-6 text-white/80" />
+                    <User className="w-4 h-4 sm:w-6 sm:h-6 text-white/80" />
                   )}
                   <span className="text-xs font-medium text-white">{creator.name}</span>
                 </>
@@ -93,19 +97,13 @@ export function PinCard({
             {isPremium && (
               <Badge 
                 variant="secondary"
-                className="bg-gradient-to-r from-purple-600 to-orange-500 text-xs"
+                className="bg-gradient-to-r from-purple-600 to-orange-500 text-[10px] sm:text-xs"
               >
                 Premium
               </Badge>
             )}
           </div>
         </div>
-        
-        {isAd && advertiser && (
-          <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
-            {advertiser}
-          </div>
-        )}
       </div>
     </Card>
   );
