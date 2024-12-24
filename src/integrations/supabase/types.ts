@@ -9,6 +9,77 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      collection_items: {
+        Row: {
+          added_at: string | null
+          collection_id: string
+          pin_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          collection_id: string
+          pin_id: string
+        }
+        Update: {
+          added_at?: string | null
+          collection_id?: string
+          pin_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_items_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_items_pin_id_fkey"
+            columns: ["pin_id"]
+            isOneToOne: false
+            referencedRelation: "pins"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collections: {
+        Row: {
+          created_at: string | null
+          creator_id: string | null
+          description: string | null
+          id: string
+          is_private: boolean | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          id?: string
+          is_private?: boolean | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          id?: string
+          is_private?: boolean | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collections_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           content: string
@@ -45,6 +116,39 @@ export type Database = {
           {
             foreignKeyName: "comments_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      follows: {
+        Row: {
+          created_at: string | null
+          follower_id: string
+          following_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          follower_id: string
+          following_id: string
+        }
+        Update: {
+          created_at?: string | null
+          follower_id?: string
+          following_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follows_following_id_fkey"
+            columns: ["following_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -125,39 +229,66 @@ export type Database = {
       profiles: {
         Row: {
           avatar: string | null
+          badges: Json[] | null
+          banner_image: string | null
           bio: string | null
           created_at: string | null
+          custom_css: string | null
+          display_name: string | null
           email: string
+          follower_count: number | null
+          following_count: number | null
+          following_ids: string[] | null
           id: string
           name: string
+          post_count: number | null
           preferences: Json | null
           social_links: Json | null
+          theme_preferences: Json | null
           updated_at: string | null
           username: string
           website: string | null
         }
         Insert: {
           avatar?: string | null
+          badges?: Json[] | null
+          banner_image?: string | null
           bio?: string | null
           created_at?: string | null
+          custom_css?: string | null
+          display_name?: string | null
           email: string
+          follower_count?: number | null
+          following_count?: number | null
+          following_ids?: string[] | null
           id: string
           name: string
+          post_count?: number | null
           preferences?: Json | null
           social_links?: Json | null
+          theme_preferences?: Json | null
           updated_at?: string | null
           username: string
           website?: string | null
         }
         Update: {
           avatar?: string | null
+          badges?: Json[] | null
+          banner_image?: string | null
           bio?: string | null
           created_at?: string | null
+          custom_css?: string | null
+          display_name?: string | null
           email?: string
+          follower_count?: number | null
+          following_count?: number | null
+          following_ids?: string[] | null
           id?: string
           name?: string
+          post_count?: number | null
           preferences?: Json | null
           social_links?: Json | null
+          theme_preferences?: Json | null
           updated_at?: string | null
           username?: string
           website?: string | null

@@ -5,9 +5,16 @@ import { useInView } from 'react-intersection-observer';
 interface MasonryGridProps {
   pins: any[];
   onPinClick: (pin: any) => void;
+  columnGap?: number;
+  rowGap?: number;
 }
 
-export function MasonryGrid({ pins, onPinClick }: MasonryGridProps) {
+export function MasonryGrid({ 
+  pins, 
+  onPinClick, 
+  columnGap = 16,
+  rowGap = 16 
+}: MasonryGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [columns, setColumns] = useState(6);
   const [ref, inView] = useInView({
@@ -46,9 +53,10 @@ export function MasonryGrid({ pins, onPinClick }: MasonryGridProps) {
     >
       <div 
         ref={ref}
-        className="grid gap-4"
+        className="grid"
         style={{
           gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+          gap: `${rowGap}px ${columnGap}px`,
           opacity: inView ? 1 : 0,
           transition: 'opacity 0.3s ease-in-out',
         }}
@@ -59,6 +67,7 @@ export function MasonryGrid({ pins, onPinClick }: MasonryGridProps) {
               <div 
                 key={pin.id}
                 className="w-full transform-gpu"
+                style={{ marginBottom: `${rowGap}px` }}
               >
                 <PinCard
                   {...pin}

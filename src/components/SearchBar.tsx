@@ -11,12 +11,17 @@ import {
 } from './ui/dropdown-menu';
 import { useNavigate } from 'react-router-dom';
 import { debounce } from 'lodash';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from './ui/dialog';
 
 interface AdvancedSearchParams {
   exactMatch?: string;
   excludeTerms?: string;
-  author?: string;
-  excludeAuthors?: string[];
+  authors?: string[];
   fileType?: string;
   dateRange?: {
     start?: Date;
@@ -40,7 +45,7 @@ export function SearchBar() {
         category: category.toLowerCase(),
         ...(advancedParams.exactMatch && { exact: advancedParams.exactMatch }),
         ...(advancedParams.excludeTerms && { exclude: advancedParams.excludeTerms }),
-        ...(advancedParams.author && { author: advancedParams.author }),
+        ...(advancedParams.authors?.length && { authors: advancedParams.authors.join(',') }),
         ...(advancedParams.fileType && { type: advancedParams.fileType }),
       });
       
@@ -54,6 +59,11 @@ export function SearchBar() {
     if (query.trim()) {
       handleSearch(query);
     }
+  };
+
+  const handleAuthorInput = (value: string) => {
+    const authors = value.split(',').map(author => author.trim()).filter(Boolean);
+    setAdvancedParams(prev => ({ ...prev, authors }));
   };
 
   return (
@@ -90,37 +100,62 @@ export function SearchBar() {
               Trending
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setShowAdvanced(!showAdvanced)}>
+            <DropdownMenuItem onClick={() => setShowAdvanced(true)}>
               Advanced Search <ChevronDown className="ml-2 h-4 w-4" />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      {showAdvanced && (
-        <div className="mt-2 p-4 bg-background border rounded-md shadow-sm space-y-3 animate-in fade-in-0 slide-in-from-top-2">
-          <Input
-            placeholder="Exact match phrase"
-            value={advancedParams.exactMatch || ''}
-            onChange={(e) => setAdvancedParams({ ...advancedParams, exactMatch: e.target.value })}
-          />
-          <Input
-            placeholder="Exclude terms (comma separated)"
-            value={advancedParams.excludeTerms || ''}
-            onChange={(e) => setAdvancedParams({ ...advancedParams, excludeTerms: e.target.value })}
-          />
-          <Input
-            placeholder="Author username"
-            value={advancedParams.author || ''}
-            onChange={(e) => setAdvancedParams({ ...advancedParams, author: e.target.value })}
-          />
-          <Input
-            placeholder="File type (e.g., jpg, png)"
-            value={advancedParams.fileType || ''}
-            onChange={(e) => setAdvancedParams({ ...advancedParams, fileType: e.target.value })}
-          />
-        </div>
-      )}
+      <Dialog open={showAdvanced} onOpenChange={setShowAdvanced}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Advanced Search</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Exact Match Phrase
+              </label>
+              <Input
+                placeholder='e.g. "exact phrase"'
+                value={advancedParams.exactMatch || ''}
+                onChange={(e) => setAdvancedParams({ ...advancedParams, exactMatch: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Exclude Terms (comma separated)
+              </label>
+              <Input
+                placeholder="term1, term2, term3"
+                value={advancedParams.excludeTerms || ''}
+                onChange={(e) => setAdvancedParams({ ...advancedParams, excludeTerms: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Authors (comma separated)
+              </label>
+              <Input
+                placeholder="author1, author2, author3"
+                value={advancedParams.authors?.join(', ') || ''}
+                onChange={(e) => handleAuthorInput(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                File Type
+              </label>
+              <Input
+                placeholder="e.g., jpg, png"
+                value={advancedParams.fileType || ''}
+                onChange={(e) => setAdvancedParams({ ...advancedParams, fileType: e.target.value })}
+              />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }
