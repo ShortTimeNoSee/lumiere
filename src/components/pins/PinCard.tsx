@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Heart, Flag, MessageCircle, User } from "lucide-react";
+import { Heart, Flag, User } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -89,7 +88,7 @@ export function PinCard({
         
         <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-2 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
           <div className="flex items-center gap-2 mb-2">
-            {creator.avatar ? (
+            {creator?.avatar ? (
               <img 
                 src={creator.avatar} 
                 alt={creator.name}
@@ -98,7 +97,7 @@ export function PinCard({
             ) : (
               <User className="w-8 h-8 text-white/80" />
             )}
-            <span className="text-sm font-medium text-white">{creator.name}</span>
+            <span className="text-sm font-medium text-white">{creator?.name || 'Unknown'}</span>
           </div>
 
           <h3 className="text-sm font-semibold text-white mb-1">{title}</h3>
@@ -116,15 +115,6 @@ export function PinCard({
               >
                 <Heart className={`w-4 h-4 mr-1 ${isLiked ? 'fill-current' : ''}`} />
                 <span>{likeCount}</span>
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 px-3 text-white hover:bg-white/20"
-              >
-                <MessageCircle className="w-4 h-4 mr-1" />
-                <span>{comments}</span>
               </Button>
             </div>
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { Masonry } from '@fristys/masonry';
 import { PinCard } from '../pins/PinCard';
+import { Masonry } from '@fristys/masonry';
 
 interface MasonryContainerProps {
   pins: any[];
@@ -9,10 +9,11 @@ interface MasonryContainerProps {
 
 export function MasonryContainer({ pins, onPinClick }: MasonryContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const masonryRef = useRef<any>(null);
 
   useEffect(() => {
     if (containerRef.current) {
-      const masonry = new Masonry(containerRef.current, {
+      masonryRef.current = new Masonry(containerRef.current, {
         columns: 6,
         gutter: 16,
         gutterUnit: 'px',
@@ -30,11 +31,13 @@ export function MasonryContainer({ pins, onPinClick }: MasonryContainerProps) {
         useContainerWidth: true,
         trackItemSizeChanges: true
       });
-
-      return () => {
-        masonry.destroy();
-      };
     }
+
+    return () => {
+      if (masonryRef.current && typeof masonryRef.current.destroy === 'function') {
+        masonryRef.current.destroy();
+      }
+    };
   }, [pins]);
 
   return (

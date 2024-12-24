@@ -18,25 +18,28 @@ const DEMO_PINS = [
     comments: []
   },
   {
-    id: 2,
+    id: "2",
     title: "Premium Coffee Experience",
     imageUrl: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
     description: "Start your day with premium coffee",
-    isAd: true,
-    advertiser: "Coffee Co.",
-    width: 800,
-    height: 1200
+    creator: {
+      id: "2",
+      name: "John Doe"
+    },
+    likes: 15,
+    comments: []
   },
   {
-    id: 3,
+    id: "3",
     title: "Modern Development",
     imageUrl: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
     description: "Modern software development workspace",
-    width: 1600,
-    height: 900,
     creator: {
+      id: "3",
       name: "Jane Smith"
-    }
+    },
+    likes: 28,
+    comments: []
   },
   {
     id: 4,
@@ -180,7 +183,14 @@ const DEMO_PINS = [
     width: 1920,
     height: 1280
   }
-];
+].map(pin => ({
+  ...pin,
+  id: String(pin.id),
+  creator: pin.creator || {
+    id: "default",
+    name: "Jane Smith"
+  }
+}));
 
 const Index = () => {
   const [selectedPin, setSelectedPin] = useState<typeof DEMO_PINS[0] | null>(null);
