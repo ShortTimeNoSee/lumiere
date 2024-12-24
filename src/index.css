@@ -37,126 +37,31 @@
   }
 }
 
-.masonry-grid {
-  display: grid;
-  grid-gap: 1rem;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-}
-
-@media (min-width: 640px) {
-  .masonry-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 768px) {
-  .masonry-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .masonry-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (min-width: 1280px) {
-  .masonry-grid {
-    grid-template-columns: repeat(5, 1fr);
-  }
-}
-
-@media (min-width: 1536px) {
-  .masonry-grid {
-    grid-template-columns: repeat(6, 1fr);
-  }
-}
-
-.pin-card {
-  break-inside: avoid;
-  margin-bottom: 1rem;
-  display: inline-block;
+#masonry {
   width: 100%;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
-  contain: layout style paint;
+  margin: 0 auto;
 }
 
-.pin-card:hover {
-  transform: translateY(-4px) scale(1.02);
+#masonry.masonry-loading {
+  opacity: 0;
 }
 
-.pin-image-container {
-  position: relative;
+#masonry.masonry-loaded {
+  opacity: 1;
+}
+
+.masonry-item {
   width: 100%;
-  overflow: hidden;
-  border-radius: var(--radius);
-  contain: layout style paint;
-}
-
-.pin-image {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: cover;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  will-change: transform;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out forwards;
-}
-
-.animate-scale-in {
-  animation: scaleIn 0.3s ease-out forwards;
-}
-
-.gradient-text {
-  @apply bg-gradient-to-r from-purple-600 to-orange-500 bg-clip-text text-transparent;
+  padding: 8px;
+  box-sizing: border-box;
 }
 
 .pin-overlay {
   @apply absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300;
 }
 
-.pin-card:hover .pin-overlay {
-  @apply opacity-100;
-}
-
 .pin-content {
-  @apply absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-2 opacity-0 transition-all duration-300;
-  font-size: clamp(0.75rem, 2vw, 1rem);
-}
-
-.pin-card:hover .pin-content {
-  @apply translate-y-0 opacity-100;
+  @apply absolute bottom-0 left-0 right-0 p-4 transform translate-y-2 opacity-0 transition-all duration-300;
 }
 
 /* Mobile optimizations */
@@ -164,9 +69,5 @@
   .pin-content {
     font-size: clamp(0.7rem, 1.5vw, 0.875rem);
     padding: 0.5rem;
-  }
-  
-  .pin-card:hover {
-    transform: translateY(-2px) scale(1.01);
   }
 }

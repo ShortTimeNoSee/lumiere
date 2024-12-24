@@ -1,21 +1,21 @@
 import { useState } from "react";
 import { Header } from "@/components/Header";
-import { PinCard } from "@/components/PinCard";
-import { PinModal } from "@/components/PinModal";
+import { MasonryContainer } from "@/components/masonry/MasonryContainer";
+import { PinModal } from "@/components/pins/PinModal";
 
-// Extended demo data with actual dimensions
 const DEMO_PINS = [
   {
-    id: 1,
+    id: "1",
     title: "Beautiful Workspace",
     imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
     description: "A clean and minimal workspace setup",
-    width: 1200,
-    height: 800,
     creator: {
-      name: "John Doe",
+      id: "1",
+      name: "Jane Smith",
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e"
-    }
+    },
+    likes: 42,
+    comments: []
   },
   {
     id: 2,
@@ -189,22 +189,10 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container mx-auto">
-        <div className="masonry-grid">
-          {DEMO_PINS.map((pin) => (
-            <PinCard
-              key={pin.id}
-              imageUrl={pin.imageUrl}
-              title={pin.title}
-              description={pin.description}
-              isAd={pin.isAd}
-              advertiser={pin.advertiser}
-              width={pin.width}
-              height={pin.height}
-              creator={pin.creator}
-              onClick={() => setSelectedPin(pin)}
-            />
-          ))}
-        </div>
+        <MasonryContainer
+          pins={DEMO_PINS}
+          onPinClick={setSelectedPin}
+        />
       </main>
       <PinModal
         isOpen={!!selectedPin}
