@@ -9,7 +9,7 @@ interface MasonryContainerProps {
 
 export function MasonryContainer({ pins, onPinClick }: MasonryContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const masonryRef = useRef<any>(null);
+  const masonryRef = useRef<Masonry | null>(null);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -34,8 +34,8 @@ export function MasonryContainer({ pins, onPinClick }: MasonryContainerProps) {
     }
 
     return () => {
-      if (masonryRef.current && typeof masonryRef.current.destroy === 'function') {
-        masonryRef.current.destroy();
+      if (masonryRef.current && 'destroy' in masonryRef.current) {
+        (masonryRef.current as any).destroy();
       }
     };
   }, [pins]);
