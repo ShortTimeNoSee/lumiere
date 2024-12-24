@@ -5,9 +5,14 @@ import { Masonry } from '@fristys/masonry';
 interface MasonryContainerProps {
   pins: any[];
   onPinClick: (pin: any) => void;
+  onProfileClick: (userId: string) => void;
 }
 
-export function MasonryContainer({ pins, onPinClick }: MasonryContainerProps) {
+export function MasonryContainer({ 
+  pins, 
+  onPinClick,
+  onProfileClick 
+}: MasonryContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const masonryRef = useRef<Masonry | null>(null);
 
@@ -34,8 +39,12 @@ export function MasonryContainer({ pins, onPinClick }: MasonryContainerProps) {
     }
 
     return () => {
-      if (masonryRef.current && 'destroy' in masonryRef.current) {
-        (masonryRef.current as any).destroy();
+      if (masonryRef.current) {
+        // Clean up masonry instance
+        const container = containerRef.current;
+        if (container) {
+          container.innerHTML = '';
+        }
       }
     };
   }, [pins]);
@@ -48,7 +57,11 @@ export function MasonryContainer({ pins, onPinClick }: MasonryContainerProps) {
     >
       {pins.map((pin) => (
         <div key={pin.id} className="masonry-item mb-4">
-          <PinCard {...pin} onClick={() => onPinClick(pin)} />
+          <PinCard 
+            {...pin} 
+            onClick={() => onPinClick(pin)}
+            onProfileClick={() => onProfileClick(pin.creator.id)}
+          />
         </div>
       ))}
     </div>
