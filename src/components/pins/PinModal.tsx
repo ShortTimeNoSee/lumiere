@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface PinModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onProfileClick: (userId: string) => void;
   pin: {
     id: string;
     imageUrl: string;
@@ -31,7 +32,7 @@ interface PinModalProps {
   } | null;
 }
 
-export function PinModal({ isOpen, onClose, pin }: PinModalProps) {
+export function PinModal({ isOpen, onClose, pin, onProfileClick }: PinModalProps) {
   const [comment, setComment] = useState("");
   const [isLiked, setIsLiked] = useState(pin?.hasLiked || false);
   const [likeCount, setLikeCount] = useState(pin?.likes || 0);
@@ -118,16 +119,21 @@ export function PinModal({ isOpen, onClose, pin }: PinModalProps) {
       <DialogContent className="max-w-4xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {pin.creator.avatar ? (
-              <img
-                src={pin.creator.avatar}
-                alt={pin.creator.name}
-                className="w-8 h-8 rounded-full"
-              />
-            ) : (
-              <User className="w-8 h-8" />
-            )}
-            <span>{pin.creator.name}</span>
+            <div 
+              className="flex items-center gap-2 cursor-pointer" 
+              onClick={() => onProfileClick(pin.creator.id)}
+            >
+              {pin.creator.avatar ? (
+                <img
+                  src={pin.creator.avatar}
+                  alt={pin.creator.name}
+                  className="w-8 h-8 rounded-full"
+                />
+              ) : (
+                <User className="w-8 h-8" />
+              )}
+              <span>{pin.creator.name}</span>
+            </div>
           </DialogTitle>
         </DialogHeader>
 
@@ -197,17 +203,27 @@ export function PinModal({ isOpen, onClose, pin }: PinModalProps) {
               <div className="space-y-2 max-h-[300px] overflow-y-auto">
                 {pin.comments?.map((comment: any) => (
                   <div key={comment.id} className="flex items-start gap-2 p-2 rounded-lg bg-muted">
-                    {comment.user.avatar ? (
-                      <img
-                        src={comment.user.avatar}
-                        alt={comment.user.name}
-                        className="w-6 h-6 rounded-full"
-                      />
-                    ) : (
-                      <User className="w-6 h-6" />
-                    )}
+                    <div 
+                      className="cursor-pointer" 
+                      onClick={() => onProfileClick(comment.user.id)}
+                    >
+                      {comment.user.avatar ? (
+                        <img
+                          src={comment.user.avatar}
+                          alt={comment.user.name}
+                          className="w-6 h-6 rounded-full"
+                        />
+                      ) : (
+                        <User className="w-6 h-6" />
+                      )}
+                    </div>
                     <div>
-                      <p className="text-sm font-medium">{comment.user.name}</p>
+                      <p 
+                        className="text-sm font-medium cursor-pointer hover:underline" 
+                        onClick={() => onProfileClick(comment.user.id)}
+                      >
+                        {comment.user.name}
+                      </p>
                       <p className="text-sm text-muted-foreground">{comment.content}</p>
                     </div>
                   </div>
