@@ -8,6 +8,7 @@ import { PrivateRoute } from "@/components/auth/PrivateRoute";
 import Index from "./pages/Index";
 import Create from "./pages/Create";
 import Profile from "./pages/Profile";
+import ProfileSetup from "./pages/ProfileSetup";
 import Search from "./pages/Search";
 import Upgrade from "./pages/Upgrade";
 import Login from "./pages/Login";
@@ -23,6 +24,7 @@ const App = () => (
           <Sonner />
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/profile/setup" element={<ProfileSetup />} />
             <Route
               path="/"
               element={

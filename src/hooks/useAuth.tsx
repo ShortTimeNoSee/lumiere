@@ -9,6 +9,7 @@ interface AuthContextType {
   profile: any | null;
   signOut: () => Promise<void>;
   loading: boolean;
+  updateProfile: (updates: any) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -16,6 +17,7 @@ const AuthContext = createContext<AuthContextType>({
   profile: null,
   signOut: async () => {},
   loading: true,
+  updateProfile: async () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -35,11 +37,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) throw error;
       setProfile(data);
+      return data;
     } catch (error) {
       console.error('Error fetching profile:', error);
       toast({
         title: 'Error',
         description: 'Failed to fetch user profile',
+        variant: 'destructive',
+      });
+      return null;
+    }
+  };
+
+  const updateProfile = async (updates: any) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({ id: user?.id, ...updates })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      await fetchProfile(user?.id!);
+      toast({
+        title: 'Success',
+        description: 'Profile updated successfully',
+      });
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update profile',
         variant: 'destructive',
       });
     }
@@ -59,7 +88,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        await fetchProfile(session.user.id);
+        const profile = await fetchProfile(session.user.id);
+        if (!profile && event === 'SIGNED_IN') {
+          navigate('/profile/setup');
+        }
       } else {
         setProfile(null);
       }
@@ -94,7 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, signOut, loading }}>
+    <AuthContext.Provider value={{ user, profile, signOut, loading, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
