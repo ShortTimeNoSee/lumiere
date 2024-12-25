@@ -155,6 +155,39 @@ export type Database = {
           },
         ]
       }
+      friendships: {
+        Row: {
+          created_at: string | null
+          user_id1: string
+          user_id2: string
+        }
+        Insert: {
+          created_at?: string | null
+          user_id1: string
+          user_id2: string
+        }
+        Update: {
+          created_at?: string | null
+          user_id1?: string
+          user_id2?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friendships_user_id1_fkey"
+            columns: ["user_id1"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "friendships_user_id2_fkey"
+            columns: ["user_id2"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       likes: {
         Row: {
           created_at: string | null
@@ -182,6 +215,60 @@ export type Database = {
           {
             foreignKeyName: "likes_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string | null
+          id: string
+          message: string
+          read: boolean | null
+          recipient_id: string
+          sender_id: string | null
+          type: Database["public"]["Enums"]["notification_type"]
+          updated_at: string | null
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string | null
+          id?: string
+          message: string
+          read?: boolean | null
+          recipient_id: string
+          sender_id?: string | null
+          type: Database["public"]["Enums"]["notification_type"]
+          updated_at?: string | null
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          recipient_id?: string
+          sender_id?: string | null
+          type?: Database["public"]["Enums"]["notification_type"]
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_sender_id_fkey"
+            columns: ["sender_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -300,6 +387,8 @@ export type Database = {
       }
       reports: {
         Row: {
+          admin_id: string | null
+          admin_notes: string | null
           content_id: string
           content_type: string
           created_at: string | null
@@ -307,10 +396,13 @@ export type Database = {
           id: string
           reason: string
           reporter_id: string | null
+          resolved_at: string | null
           status: string
           updated_at: string | null
         }
         Insert: {
+          admin_id?: string | null
+          admin_notes?: string | null
           content_id: string
           content_type: string
           created_at?: string | null
@@ -318,10 +410,13 @@ export type Database = {
           id?: string
           reason: string
           reporter_id?: string | null
+          resolved_at?: string | null
           status?: string
           updated_at?: string | null
         }
         Update: {
+          admin_id?: string | null
+          admin_notes?: string | null
           content_id?: string
           content_type?: string
           created_at?: string | null
@@ -329,10 +424,18 @@ export type Database = {
           id?: string
           reason?: string
           reporter_id?: string | null
+          resolved_at?: string | null
           status?: string
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "reports_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "reports_reporter_id_fkey"
             columns: ["reporter_id"]
@@ -350,7 +453,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      notification_type: "like" | "comment" | "reply" | "follow" | "mention"
     }
     CompositeTypes: {
       [_ in never]: never
