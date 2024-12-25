@@ -1,13 +1,13 @@
 export const demoUsers = {
   johnDoe: {
-    id: "d0e7e1d0-4b1a-4e1a-8f1a-9f1a8f1a9f1a",
+    id: "123e4567-e89b-12d3-a456-426614174000",
     name: "John Doe",
     username: "johndoe",
     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
     bio: "Photography enthusiast and digital creator",
   },
   janeSmith: {
-    id: "s7i1h5m2-3j4n-5e6s-7m8i-9t0h1s2m3i4t",
+    id: "987fcdeb-51a2-43d7-9b56-626614174001",
     name: "Jane Smith",
     username: "janesmith",
     avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",

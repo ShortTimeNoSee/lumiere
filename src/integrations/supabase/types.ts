@@ -240,6 +240,7 @@ export type Database = {
           following_count: number | null
           following_ids: string[] | null
           id: string
+          is_demo: boolean | null
           name: string
           post_count: number | null
           preferences: Json | null
@@ -262,6 +263,7 @@ export type Database = {
           following_count?: number | null
           following_ids?: string[] | null
           id: string
+          is_demo?: boolean | null
           name: string
           post_count?: number | null
           preferences?: Json | null
@@ -284,6 +286,7 @@ export type Database = {
           following_count?: number | null
           following_ids?: string[] | null
           id?: string
+          is_demo?: boolean | null
           name?: string
           post_count?: number | null
           preferences?: Json | null
