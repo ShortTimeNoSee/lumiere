@@ -15,48 +15,101 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-
-const DEMO_USER = {
-  username: "johndoe",
-  name: "John Doe",
-  bio: "Digital creator and photography enthusiast",
-  avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e",
-};
-
-const DEMO_PINS = [
-  {
-    id: 1,
-    title: "My Workspace",
-    imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-    description: "Clean and minimal workspace setup"
-  },
-  {
-    id: 2,
-    title: "Tech Innovation",
-    imageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475",
-    description: "The future of technology"
-  },
-];
-
-const DEMO_COLLECTIONS = [
-  {
-    id: 1,
-    title: "Workspace Inspiration",
-    pins: DEMO_PINS,
-    coverImage: DEMO_PINS[0].imageUrl
-  }
-];
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useParams } from "react-router-dom";
 
 const Profile = () => {
-  const [selectedPin, setSelectedPin] = useState<typeof DEMO_PINS[0] | null>(null);
-  const [activeTab, setActiveTab] = useState("uploads");
+  const { id } = useParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("collections");
+  const [selectedPin, setSelectedPin] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
-    name: DEMO_USER.name,
-    username: DEMO_USER.username,
-    bio: DEMO_USER.bio,
+    name: "",
+    username: "",
+    bio: "",
   });
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile', id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', id || user?.id)
+        .single();
+      return data;
+    },
+  });
+
+  const { data: collections } = useQuery({
+    queryKey: ['collections', id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('collections')
+        .select(`
+          *,
+          pins:collection_items(
+            pin:pins(*)
+          )
+        `)
+        .eq('creator_id', id || user?.id);
+      return data || [];
+    },
+  });
+
+  const { data: pins } = useQuery({
+    queryKey: ['pins', id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('pins')
+        .select('*')
+        .eq('creator_id', id || user?.id);
+      return data || [];
+    },
+  });
+
+  const { data: isFollowing } = useQuery({
+    queryKey: ['following', id],
+    queryFn: async () => {
+      if (!user || !id) return false;
+      const { data } = await supabase
+        .from('follows')
+        .select('*')
+        .eq('follower_id', user.id)
+        .eq('following_id', id)
+        .maybeSingle();
+      return !!data;
+    },
+    enabled: !!user && !!id && id !== user.id,
+  });
+
+  const followMutation = useMutation({
+    mutationFn: async () => {
+      if (isFollowing) {
+        await supabase
+          .from('follows')
+          .delete()
+          .eq('follower_id', user?.id)
+          .eq('following_id', id);
+      } else {
+        await supabase
+          .from('follows')
+          .insert({
+            follower_id: user?.id,
+            following_id: id,
+          });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['following', id] });
+    },
+  });
 
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,14 +129,14 @@ const Profile = () => {
           <div className="flex flex-col items-center mb-12">
             <div className="w-32 h-32 rounded-full overflow-hidden mb-4">
               <img 
-                src={DEMO_USER.avatar} 
-                alt={DEMO_USER.name}
+                src={profile.avatar} 
+                alt={profile.name}
                 className="w-full h-full object-cover"
               />
             </div>
-            <h1 className="text-3xl font-bold mb-2">{DEMO_USER.name}</h1>
-            <p className="text-muted-foreground mb-4">@{DEMO_USER.username}</p>
-            <p className="text-center max-w-md mb-6">{DEMO_USER.bio}</p>
+            <h1 className="text-3xl font-bold mb-2">{profile.name}</h1>
+            <p className="text-muted-foreground mb-4">@{profile.username}</p>
+            <p className="text-center max-w-md mb-6">{profile.bio}</p>
             <div className="flex gap-4">
               <Dialog open={isEditing} onOpenChange={setIsEditing}>
                 <DialogTrigger asChild>
@@ -153,14 +206,14 @@ const Profile = () => {
             
             <TabsContent value="uploads" className="min-h-[200px]">
               <MasonryGrid
-                pins={DEMO_PINS}
+                pins={pins}
                 onPinClick={setSelectedPin}
               />
             </TabsContent>
             
             <TabsContent value="collections" className="min-h-[200px]">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {DEMO_COLLECTIONS.map((collection) => (
+                {collections.map((collection) => (
                   <div key={collection.id} className="relative rounded-lg overflow-hidden group cursor-pointer">
                     <img 
                       src={collection.coverImage} 

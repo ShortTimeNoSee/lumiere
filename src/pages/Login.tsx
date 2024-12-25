@@ -42,6 +42,13 @@ export default function Login() {
               },
             }}
             providers={[]}
+            localization={{
+              variables: {
+                sign_up: {
+                  password_label: 'Password (minimum 8 characters, including uppercase, lowercase, and numbers)',
+                },
+              },
+            }}
           />
         </div>
       </div>
