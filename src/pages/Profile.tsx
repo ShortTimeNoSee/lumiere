@@ -246,7 +246,6 @@ const Profile = () => {
         isOpen={!!selectedPin}
         onClose={() => setSelectedPin(null)}
         pin={selectedPin}
-        onProfileClick={(userId) => navigate(`/profile/${userId}`)}
       />
     </div>
   );

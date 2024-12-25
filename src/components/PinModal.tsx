@@ -12,6 +12,11 @@ interface PinModalProps {
     imageUrl: string;
     title: string;
     description?: string;
+    creator?: {
+      id: string;
+      name: string;
+      avatar?: string;
+    };
   } | null;
 }
 

@@ -20,20 +20,11 @@ export default function Index() {
         .select(`
           *,
           creator:profiles!pins_creator_id_fkey(*),
-          likes(count),
-          comments(count)
+          likes:likes(count),
+          comments:comments(count),
+          user_liked:likes!inner(user_id)
         `)
         .order('created_at', { ascending: false });
-
-      if (user) {
-        query = query.select(`
-          *,
-          creator:profiles!pins_creator_id_fkey(*),
-          likes(count),
-          comments(count),
-          user_liked:likes!inner(user_id)
-        `).eq('user_liked.user_id', user.id);
-      }
 
       const { data, error } = await query;
       
@@ -42,7 +33,12 @@ export default function Index() {
         return [];
       }
       
-      return data || [];
+      return data.map(pin => ({
+        ...pin,
+        likes: pin.likes[0]?.count || 0,
+        comments: pin.comments[0]?.count || 0,
+        hasLiked: user ? pin.user_liked.some(like => like.user_id === user.id) : false
+      }));
     },
   });
 
@@ -68,7 +64,6 @@ export default function Index() {
         isOpen={!!selectedPin}
         onClose={() => setSelectedPin(null)}
         pin={selectedPin}
-        onProfileClick={handleProfileClick}
       />
     </div>
   );
