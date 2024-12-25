@@ -35,7 +35,7 @@ const Profile = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: profile, isError: profileError } = useQuery({
+  const { data: profile, isError } = useQuery({
     queryKey: ['profile', id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -50,13 +50,8 @@ const Profile = () => {
       }
       return data;
     },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Profile not found",
-        variant: "destructive"
-      });
-      navigate('/');
+    meta: {
+      errorMessage: "Failed to load profile"
     }
   });
 
@@ -91,6 +86,16 @@ const Profile = () => {
       return data || [];
     },
   });
+
+  if (isError) {
+    toast({
+      title: "Error",
+      description: "Profile not found",
+      variant: "destructive"
+    });
+    navigate('/');
+    return null;
+  }
 
   const { data: isFollowing } = useQuery({
     queryKey: ['following', id],
