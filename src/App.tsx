@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { PrivateRoute } from "@/components/auth/PrivateRoute";
 import Index from "./pages/Index";
 import Create from "./pages/Create";
 import Profile from "./pages/Profile";
@@ -21,12 +22,47 @@ const App = () => (
           <Toaster />
           <Sonner />
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/create" element={<Create />} />
-            <Route path="/profile/:id?" element={<Profile />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/upgrade" element={<Upgrade />} />
             <Route path="/login" element={<Login />} />
+            <Route
+              path="/"
+              element={
+                <PrivateRoute>
+                  <Index />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/create"
+              element={
+                <PrivateRoute>
+                  <Create />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/profile/:id?"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/search"
+              element={
+                <PrivateRoute>
+                  <Search />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/upgrade"
+              element={
+                <PrivateRoute>
+                  <Upgrade />
+                </PrivateRoute>
+              }
+            />
           </Routes>
         </TooltipProvider>
       </AuthProvider>
