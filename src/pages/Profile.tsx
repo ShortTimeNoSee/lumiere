@@ -35,16 +35,29 @@ const Profile = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: profile } = useQuery({
+  const { data: profile, isError: profileError } = useQuery({
     queryKey: ['profile', id],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', id || user?.id)
-        .single();
+        .maybeSingle();
+      
+      if (error) throw error;
+      if (!data) {
+        throw new Error('Profile not found');
+      }
       return data;
     },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Profile not found",
+        variant: "destructive"
+      });
+      navigate('/');
+    }
   });
 
   const { data: collections } = useQuery({
@@ -60,11 +73,10 @@ const Profile = () => {
         `)
         .eq('creator_id', id || user?.id);
 
-      // Transform the data to include cover image and title
       return (data || []).map(collection => ({
         ...collection,
         coverImage: collection.pins[0]?.pin?.image_url || '/placeholder.svg',
-        title: collection.name // Use collection name as title
+        title: collection.name
       }));
     },
   });
@@ -126,6 +138,20 @@ const Profile = () => {
     setIsEditing(false);
   };
 
+  if (profileError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Profile not found</h1>
+            <Button onClick={() => navigate('/')}>Go Home</Button>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -143,64 +169,68 @@ const Profile = () => {
             <p className="text-muted-foreground mb-4">@{profile?.username}</p>
             <p className="text-center max-w-md mb-6">{profile?.bio}</p>
             
-            <Dialog open={isEditing} onOpenChange={setIsEditing}>
-              <DialogTrigger asChild>
-                <Button variant="outline">Edit Profile</Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Edit Profile</DialogTitle>
-                  <DialogDescription>
-                    Make changes to your profile here. Click save when you're done.
-                  </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleEditSubmit} className="space-y-4 pt-4">
-                  <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm font-medium">
-                      Name
-                    </label>
-                    <Input
-                      id="name"
-                      value={editForm.name}
-                      onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="username" className="text-sm font-medium">
-                      Username
-                    </label>
-                    <Input
-                      id="username"
-                      value={editForm.username}
-                      onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="bio" className="text-sm font-medium">
-                      Bio
-                    </label>
-                    <Textarea
-                      id="bio"
-                      value={editForm.bio}
-                      onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-                    />
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
-                      Cancel
-                    </Button>
-                    <Button type="submit">Save Changes</Button>
-                  </div>
-                </form>
-              </DialogContent>
-            </Dialog>
-            
-            <Button 
-              className="bg-gradient-to-r from-purple-600 to-orange-500 hover:from-purple-700 hover:to-orange-600"
-              onClick={() => window.location.href = '/upgrade'}
-            >
-              Upgrade to Pro
-            </Button>
+            {user?.id === profile?.id && (
+              <>
+                <Dialog open={isEditing} onOpenChange={setIsEditing}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline">Edit Profile</Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Edit Profile</DialogTitle>
+                      <DialogDescription>
+                        Make changes to your profile here. Click save when you're done.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleEditSubmit} className="space-y-4 pt-4">
+                      <div className="space-y-2">
+                        <label htmlFor="name" className="text-sm font-medium">
+                          Name
+                        </label>
+                        <Input
+                          id="name"
+                          value={editForm.name}
+                          onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label htmlFor="username" className="text-sm font-medium">
+                          Username
+                        </label>
+                        <Input
+                          id="username"
+                          value={editForm.username}
+                          onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label htmlFor="bio" className="text-sm font-medium">
+                          Bio
+                        </label>
+                        <Textarea
+                          id="bio"
+                          value={editForm.bio}
+                          onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
+                          Cancel
+                        </Button>
+                        <Button type="submit">Save Changes</Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+
+                <Button 
+                  className="bg-gradient-to-r from-purple-600 to-orange-500 hover:from-purple-700 hover:to-orange-600"
+                  onClick={() => navigate('/upgrade')}
+                >
+                  Upgrade to Pro
+                </Button>
+              </>
+            )}
           </div>
           
           <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -226,7 +256,7 @@ const Profile = () => {
                   >
                     <div className="absolute inset-0 bg-black/50 rounded-lg overflow-hidden">
                       <img 
-                        src={collection.pins[0]?.pin?.image_url || '/placeholder.svg'} 
+                        src={collection.coverImage} 
                         alt={collection.name}
                         className="w-full h-full object-cover"
                       />
