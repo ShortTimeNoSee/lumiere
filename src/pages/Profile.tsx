@@ -119,7 +119,6 @@ const Profile = () => {
 
   const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would update the user profile
     toast({
       title: "Profile Updated",
       description: "Your profile changes have been saved successfully.",
@@ -144,65 +143,64 @@ const Profile = () => {
             <p className="text-muted-foreground mb-4">@{profile?.username}</p>
             <p className="text-center max-w-md mb-6">{profile?.bio}</p>
             
-              <Dialog open={isEditing} onOpenChange={setIsEditing}>
-                <DialogTrigger asChild>
-                  <Button variant="outline">Edit Profile</Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Edit Profile</DialogTitle>
-                    <DialogDescription>
-                      Make changes to your profile here. Click save when you're done.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <form onSubmit={handleEditSubmit} className="space-y-4 pt-4">
-                    <div className="space-y-2">
-                      <label htmlFor="name" className="text-sm font-medium">
-                        Name
-                      </label>
-                      <Input
-                        id="name"
-                        value={editForm.name}
-                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="username" className="text-sm font-medium">
-                        Username
-                      </label>
-                      <Input
-                        id="username"
-                        value={editForm.username}
-                        onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="bio" className="text-sm font-medium">
-                        Bio
-                      </label>
-                      <Textarea
-                        id="bio"
-                        value={editForm.bio}
-                        onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-                      />
-                    </div>
-                    <div className="flex justify-end gap-2">
-                      <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
-                        Cancel
-                      </Button>
-                      <Button type="submit">Save Changes</Button>
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
-              <Button 
-                className="bg-gradient-to-r from-purple-600 to-orange-500 hover:from-purple-700 hover:to-orange-600"
-                onClick={() => window.location.href = '/upgrade'}
-              >
-                Upgrade to Pro
-              </Button>
-            </div>
+            <Dialog open={isEditing} onOpenChange={setIsEditing}>
+              <DialogTrigger asChild>
+                <Button variant="outline">Edit Profile</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Edit Profile</DialogTitle>
+                  <DialogDescription>
+                    Make changes to your profile here. Click save when you're done.
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleEditSubmit} className="space-y-4 pt-4">
+                  <div className="space-y-2">
+                    <label htmlFor="name" className="text-sm font-medium">
+                      Name
+                    </label>
+                    <Input
+                      id="name"
+                      value={editForm.name}
+                      onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="username" className="text-sm font-medium">
+                      Username
+                    </label>
+                    <Input
+                      id="username"
+                      value={editForm.username}
+                      onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="bio" className="text-sm font-medium">
+                      Bio
+                    </label>
+                    <Textarea
+                      id="bio"
+                      value={editForm.bio}
+                      onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
+                      Cancel
+                    </Button>
+                    <Button type="submit">Save Changes</Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
             
+            <Button 
+              className="bg-gradient-to-r from-purple-600 to-orange-500 hover:from-purple-700 hover:to-orange-600"
+              onClick={() => window.location.href = '/upgrade'}
+            >
+              Upgrade to Pro
+            </Button>
           </div>
           
           <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -228,7 +226,7 @@ const Profile = () => {
                   >
                     <div className="absolute inset-0 bg-black/50 rounded-lg overflow-hidden">
                       <img 
-                        src={collection.coverImage} 
+                        src={collection.pins[0]?.pin?.image_url || '/placeholder.svg'} 
                         alt={collection.name}
                         className="w-full h-full object-cover"
                       />
@@ -243,6 +241,7 @@ const Profile = () => {
           </Tabs>
         </div>
       </main>
+      
       <PinModal
         isOpen={!!selectedPin}
         onClose={() => setSelectedPin(null)}
