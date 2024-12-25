@@ -1,21 +1,19 @@
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { MasonryContainer } from "@/components/masonry/MasonryContainer";
-import { PinModal } from "@/components/pins/PinModal";
+import { PinModal } from "@/components/PinModal";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function Index() {
   const [selectedPin, setSelectedPin] = useState(null);
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   const { data: pins = [] } = useQuery({
     queryKey: ['pins'],
     queryFn: async () => {
-      let query = supabase
+      const query = supabase
         .from('pins')
         .select(`
           *,
@@ -46,10 +44,6 @@ export default function Index() {
     setSelectedPin(pin);
   };
 
-  const handleProfileClick = (userId: string) => {
-    navigate(`/profile/${userId}`);
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -57,7 +51,7 @@ export default function Index() {
         <MasonryContainer
           pins={pins}
           onPinClick={handlePinClick}
-          onProfileClick={handleProfileClick}
+          onProfileClick={() => {}} // This prop is handled internally by PinModal now
         />
       </main>
       <PinModal
