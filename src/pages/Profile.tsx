@@ -18,7 +18,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const { id } = useParams();
@@ -59,7 +59,13 @@ const Profile = () => {
           )
         `)
         .eq('creator_id', id || user?.id);
-      return data || [];
+
+      // Transform the data to include cover image and title
+      return (data || []).map(collection => ({
+        ...collection,
+        coverImage: collection.pins[0]?.pin?.image_url || '/placeholder.svg',
+        title: collection.name // Use collection name as title
+      }));
     },
   });
 
@@ -129,15 +135,15 @@ const Profile = () => {
           <div className="flex flex-col items-center mb-12">
             <div className="w-32 h-32 rounded-full overflow-hidden mb-4">
               <img 
-                src={profile.avatar} 
-                alt={profile.name}
+                src={profile?.avatar || '/placeholder.svg'} 
+                alt={profile?.name}
                 className="w-full h-full object-cover"
               />
             </div>
-            <h1 className="text-3xl font-bold mb-2">{profile.name}</h1>
-            <p className="text-muted-foreground mb-4">@{profile.username}</p>
-            <p className="text-center max-w-md mb-6">{profile.bio}</p>
-            <div className="flex gap-4">
+            <h1 className="text-3xl font-bold mb-2">{profile?.name}</h1>
+            <p className="text-muted-foreground mb-4">@{profile?.username}</p>
+            <p className="text-center max-w-md mb-6">{profile?.bio}</p>
+            
               <Dialog open={isEditing} onOpenChange={setIsEditing}>
                 <DialogTrigger asChild>
                   <Button variant="outline">Edit Profile</Button>
@@ -196,6 +202,7 @@ const Profile = () => {
                 Upgrade to Pro
               </Button>
             </div>
+            
           </div>
           
           <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -206,22 +213,28 @@ const Profile = () => {
             
             <TabsContent value="uploads" className="min-h-[200px]">
               <MasonryGrid
-                pins={pins}
+                pins={pins || []}
                 onPinClick={setSelectedPin}
               />
             </TabsContent>
             
             <TabsContent value="collections" className="min-h-[200px]">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {collections.map((collection) => (
-                  <div key={collection.id} className="relative rounded-lg overflow-hidden group cursor-pointer">
-                    <img 
-                      src={collection.coverImage} 
-                      alt={collection.title}
-                      className="w-full aspect-square object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <h3 className="text-white text-xl font-bold">{collection.title}</h3>
+                {(collections || []).map((collection) => (
+                  <div
+                    key={collection.id}
+                    className="relative aspect-square cursor-pointer group"
+                    onClick={() => navigate(`/collection/${collection.id}`)}
+                  >
+                    <div className="absolute inset-0 bg-black/50 rounded-lg overflow-hidden">
+                      <img 
+                        src={collection.coverImage} 
+                        alt={collection.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                      <h3 className="text-white font-medium truncate">{collection.name}</h3>
                     </div>
                   </div>
                 ))}
@@ -234,6 +247,7 @@ const Profile = () => {
         isOpen={!!selectedPin}
         onClose={() => setSelectedPin(null)}
         pin={selectedPin}
+        onProfileClick={(userId) => navigate(`/profile/${userId}`)}
       />
     </div>
   );
