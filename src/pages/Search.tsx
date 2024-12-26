@@ -44,68 +44,46 @@ const DEMO_PINS = [
   }
 ];
 
-const fuzzyMatch = (text: string, query: string): boolean => {
-  text = text.toLowerCase();
-  query = query.toLowerCase();
-  
-  if (text.includes(query)) return true;
-  
-  const words = query.split(' ').filter(word => word.length > 0);
-  return words.some(word => {
-    return text.split(' ').some(textWord => 
-      textWord.includes(word) || word.includes(textWord)
-    );
-  });
-};
-
 const performSearch = async (query: string, params: URLSearchParams) => {
-  await new Promise(resolve => setTimeout(resolve, 100));
-  
   const category = params.get('category') || 'images';
-  const exact = params.get('exact');
-  const exclude = params.get('exclude');
-  const author = params.get('author');
-  const type = params.get('type');
-
-  return DEMO_PINS.filter(pin => {
-    if (!query && !exact && !exclude && !author && !type) return true;
+  
+  if (category === 'collections') {
+    const { data: collections } = await supabase
+      .from('collections')
+      .select(`
+        *,
+        creator:profiles(*),
+        pins:collection_items(
+          pin:pins(*)
+        )
+      `)
+      .textSearch('name', query)
+      .eq('visibility', 'public');
     
-    let matches = true;
-    const searchText = `${pin.title} ${pin.description || ''}`.toLowerCase();
+    return collections || [];
+  }
+  
+  if (category === 'people') {
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('*')
+      .or(`username.ilike.%${query}%,name.ilike.%${query}%`);
     
-    if (query && !fuzzyMatch(searchText, query)) {
-      matches = false;
-    }
-
-    if (exact && !searchText.includes(exact.toLowerCase())) {
-      matches = false;
-    }
-
-    if (exclude) {
-      const excludeTerms = exclude.toLowerCase().split(',');
-      if (excludeTerms.some(term => searchText.includes(term.trim()))) {
-        matches = false;
-      }
-    }
-
-    if (author) {
-      const authors = author.toLowerCase().split(',');
-      if (!pin.creator || !authors.some(a => 
-        pin.creator.name.toLowerCase().includes(a.trim())
-      )) {
-        matches = false;
-      }
-    }
-
-    if (type) {
-      const types = type.toLowerCase().split(',');
-      if (!types.some(t => pin.imageUrl.toLowerCase().endsWith(t.trim()))) {
-        matches = false;
-      }
-    }
-
-    return matches;
-  });
+    return profiles || [];
+  }
+  
+  // Default to pins search
+  const { data: pins } = await supabase
+    .from('pins')
+    .select(`
+      *,
+      creator:profiles(*),
+      likes(count),
+      comments(count)
+    `)
+    .or(`title.ilike.%${query}%,description.ilike.%${query}%`);
+  
+  return pins || [];
 };
 
 export default function Search() {

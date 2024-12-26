@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { ImageCropper } from "@/components/profile/ImageCropper";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 
 export default function ProfileSetup() {
@@ -96,19 +97,18 @@ export default function ProfileSetup() {
                 Profile Picture
               </label>
               <div className="flex items-center gap-4">
-                {avatarFile ? (
-                  <div className="w-16 h-16 rounded-full overflow-hidden">
-                    <img
+                <Avatar className="h-16 w-16">
+                  {avatarFile ? (
+                    <AvatarImage
                       src={URL.createObjectURL(avatarFile)}
                       alt="Preview"
-                      className="w-full h-full object-cover"
                     />
-                  </div>
-                ) : (
-                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                    <User className="w-8 h-8 text-muted-foreground" />
-                  </div>
-                )}
+                  ) : (
+                    <AvatarFallback>
+                      <User className="h-8 w-8" />
+                    </AvatarFallback>
+                  )}
+                </Avatar>
                 <Input
                   type="file"
                   accept="image/*"
