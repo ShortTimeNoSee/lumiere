@@ -6,10 +6,12 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { LoadingScreen } from "@/components/LoadingScreen";
+import { useNavigate } from "react-router-dom";
 
 export default function Index() {
   const [selectedPin, setSelectedPin] = useState(null);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const { data: pins = [], isLoading } = useQuery({
     queryKey: ['pins'],

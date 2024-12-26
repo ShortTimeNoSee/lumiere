@@ -6,8 +6,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useQuery } from '@tanstack/react-query';
 import { PinModal } from '@/components/PinModal';
 import { Skeleton } from '@/components/ui/skeleton';
+import { supabase } from '@/integrations/supabase/client';
 
-// Demo data for search results
 const DEMO_PINS = [
   {
     id: 1,
