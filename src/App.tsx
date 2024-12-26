@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { PrivateRoute } from "@/components/auth/PrivateRoute";
 import Index from "./pages/Index";
@@ -13,7 +13,14 @@ import Search from "./pages/Search";
 import Upgrade from "./pages/Upgrade";
 import Login from "./pages/Login";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -24,15 +31,15 @@ const App = () => (
           <Sonner />
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/profile/setup" element={<ProfileSetup />} />
             <Route
-              path="/"
+              path="/profile/setup"
               element={
                 <PrivateRoute>
-                  <Index />
+                  <ProfileSetup />
                 </PrivateRoute>
               }
             />
+            <Route path="/" element={<Index />} />
             <Route
               path="/create"
               element={
@@ -41,22 +48,8 @@ const App = () => (
                 </PrivateRoute>
               }
             />
-            <Route
-              path="/profile/:id?"
-              element={
-                <PrivateRoute>
-                  <Profile />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/search"
-              element={
-                <PrivateRoute>
-                  <Search />
-                </PrivateRoute>
-              }
-            />
+            <Route path="/profile/:id?" element={<Profile />} />
+            <Route path="/search" element={<Search />} />
             <Route
               path="/upgrade"
               element={

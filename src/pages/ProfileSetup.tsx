@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { ImageCropper } from "@/components/profile/ImageCropper";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { User } from "lucide-react";
 
 export default function ProfileSetup() {
   const navigate = useNavigate();
@@ -14,6 +16,7 @@ export default function ProfileSetup() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [croppingImage, setCroppingImage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -42,7 +45,9 @@ export default function ProfileSetup() {
       if (avatarFile) {
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('user-content')
-          .upload(`avatars/${user.id}`, avatarFile);
+          .upload(`avatars/${user.id}`, avatarFile, {
+            upsert: true
+          });
 
         if (uploadError) throw uploadError;
 
@@ -61,8 +66,12 @@ export default function ProfileSetup() {
       });
 
       navigate('/');
-    } catch (error) {
-      console.error('Error:', error);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to complete profile setup",
+        variant: "destructive"
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -88,14 +97,16 @@ export default function ProfileSetup() {
               </label>
               <div className="flex items-center gap-4">
                 {avatarFile ? (
-                  <img
-                    src={URL.createObjectURL(avatarFile)}
-                    alt="Preview"
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
+                  <div className="w-16 h-16 rounded-full overflow-hidden">
+                    <img
+                      src={URL.createObjectURL(avatarFile)}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 ) : (
                   <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                    <span className="text-2xl">👤</span>
+                    <User className="w-8 h-8 text-muted-foreground" />
                   </div>
                 )}
                 <Input

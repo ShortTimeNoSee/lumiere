@@ -50,16 +50,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updateProfile = async (updates: any) => {
+    if (!user) return;
+    
     try {
       const { error } = await supabase
         .from('profiles')
-        .upsert({ id: user?.id, ...updates })
+        .upsert({ 
+          id: user.id,
+          ...updates,
+          updated_at: new Date().toISOString()
+        })
         .select()
         .single();
 
       if (error) throw error;
 
-      await fetchProfile(user?.id!);
+      await fetchProfile(user.id);
       toast({
         title: 'Success',
         description: 'Profile updated successfully',
@@ -96,10 +102,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setProfile(null);
       }
       setLoading(false);
-
-      if (event === 'SIGNED_OUT') {
-        navigate('/login');
-      }
     });
 
     return () => {
@@ -109,7 +111,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      setUser(null);
+      setProfile(null);
       toast({
         title: "Signed out",
         description: "You have been signed out successfully",

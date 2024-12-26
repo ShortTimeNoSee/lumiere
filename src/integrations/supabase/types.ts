@@ -51,6 +51,7 @@ export type Database = {
           is_private: boolean | null
           name: string
           updated_at: string | null
+          visibility: string
         }
         Insert: {
           created_at?: string | null
@@ -60,6 +61,7 @@ export type Database = {
           is_private?: boolean | null
           name: string
           updated_at?: string | null
+          visibility?: string
         }
         Update: {
           created_at?: string | null
@@ -69,6 +71,7 @@ export type Database = {
           is_private?: boolean | null
           name?: string
           updated_at?: string | null
+          visibility?: string
         }
         Relationships: [
           {
