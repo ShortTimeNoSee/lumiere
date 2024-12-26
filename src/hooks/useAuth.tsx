@@ -70,6 +70,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         title: 'Success',
         description: 'Profile updated successfully',
       });
+      
+      // Redirect to home page after successful profile setup
+      if (window.location.pathname === '/profile/setup') {
+        navigate('/');
+      }
     } catch (error) {
       console.error('Error updating profile:', error);
       toast({

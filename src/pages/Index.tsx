@@ -38,6 +38,7 @@ export default function Index() {
         hasLiked: user ? pin.user_liked.some(like => like.user_id === user.id) : false
       }));
     },
+    refetchOnWindowFocus: false,
   });
 
   const handlePinClick = (pin: any) => {

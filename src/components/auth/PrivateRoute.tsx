@@ -2,10 +2,16 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { LoadingScreen } from '@/components/LoadingScreen';
 
-// Routes that require authentication
+// Only these routes require authentication
 const PROTECTED_ROUTES = [
   '/create',
   '/profile/setup',
+  '/upgrade'
+];
+
+// These routes should redirect to profile setup if no profile exists
+const PROFILE_REQUIRED_ROUTES = [
+  '/create',
   '/upgrade'
 ];
 
@@ -24,7 +30,7 @@ export function PrivateRoute({ children }: { children: React.ReactNode }) {
     }
 
     // If user exists but profile doesn't, redirect to profile setup
-    if (user && !profile && location.pathname !== '/profile/setup') {
+    if (user && !profile && !location.pathname.startsWith('/profile/setup')) {
       return <Navigate to="/profile/setup" state={{ from: location }} replace />;
     }
   }
