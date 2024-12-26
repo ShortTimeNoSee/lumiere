@@ -8,42 +8,6 @@ import { PinModal } from '@/components/PinModal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 
-const DEMO_PINS = [
-  {
-    id: 1,
-    title: "Beautiful Workspace",
-    imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-    description: "A clean and minimal workspace setup",
-    width: 1200,
-    height: 800,
-    creator: {
-      name: "John Doe",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e"
-    }
-  },
-  {
-    id: 2,
-    title: "Premium Coffee Experience",
-    imageUrl: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
-    description: "Start your day with premium coffee",
-    isAd: true,
-    advertiser: "Coffee Co.",
-    width: 800,
-    height: 1200
-  },
-  {
-    id: 3,
-    title: "Modern Development",
-    imageUrl: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
-    description: "Modern software development workspace",
-    width: 1600,
-    height: 900,
-    creator: {
-      name: "Jane Smith"
-    }
-  }
-];
-
 const performSearch = async (query: string, params: URLSearchParams) => {
   const category = params.get('category') || 'images';
   
